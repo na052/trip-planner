@@ -15,7 +15,9 @@ type Position = {
 export default function Home() {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-  const [position, setPosition] = useState<Position | null>(null);
+  const [positions, setPositions] = useState<Position[]>([]);
+
+  
  
   if (!apiKey) {
     return <p>Google Maps APIキーが設定されていません。</p>;
@@ -25,10 +27,13 @@ export default function Home() {
     if(!event.detail.latLng){
       return;
     }
-    setPosition({
-      lat: event.detail.latLng.lat,
-      lng: event.detail.latLng.lng
-    });
+
+    const newPosition = {
+    lat: event.detail.latLng.lat,
+    lng: event.detail.latLng.lng,
+    };
+
+    setPositions([...positions, newPosition]);
   };
 
   return (
@@ -46,7 +51,12 @@ export default function Home() {
             onClick={handleMapClick}
             mapId= "DEMO_MAP_ID"
           >
-            {position && <AdvancedMarker position={position} />}
+            {positions.map((position, index) => (
+              <AdvancedMarker
+                key={index}
+                position={position}
+                />
+            ))}
 
           </Map>
         </APIProvider>
