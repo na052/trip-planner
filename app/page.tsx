@@ -7,15 +7,19 @@ import { APIProvider,
   AdvancedMarker,
   MapMouseEvent } from "@vis.gl/react-google-maps";
 
-type Position = {
+type Place = {
+  id : number;
+  name: string;
   lat: number;
   lng: number;
+  stayminutes: number;
+  cost: number;
 };
 
 export default function Home() {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-  const [positions, setPositions] = useState<Position[]>([]);
+  const [places, setPlaces] = useState<Place[]>([]);
 
   
  
@@ -28,12 +32,16 @@ export default function Home() {
       return;
     }
 
-    const newPosition = {
+    const newPlace: Place = {
+    id: Date.now(),
+    name: "未設定",
     lat: event.detail.latLng.lat,
     lng: event.detail.latLng.lng,
+    stayminutes: 60,
+    cost: 0,
     };
 
-    setPositions([...positions, newPosition]);
+    setPlaces([...places, newPlace]);
   };
 
   return (
@@ -51,11 +59,11 @@ export default function Home() {
             onClick={handleMapClick}
             mapId= "DEMO_MAP_ID"
           >
-            {positions.map((position, index) => (
+            {places.map((place, index) => (
               <AdvancedMarker
-                key={index}
-                position={position}
-                />
+                key={place.id}
+                position={{ lat: place.lat, lng: place.lng }}
+              />
             ))}
 
           </Map>
