@@ -45,10 +45,39 @@ export default function Home() {
   };
 
   return (
-    <main>
-      <h1>Trip Planner</h1>
+    <main
+      style={{
+        display: "flex",
+        width: "100%",
+        height: "100vh",
+      }}
+    >
+      {/*左側のパネル*/}
+      <div
+        style={{
+          width: "35%",
+          padding: "20px",
+        }}
+      >
+        <h1>Trip Planner</h1>
 
-      <div style={{ width: "100%", height: "600px" }}>
+        {places.map((place, index) =>(
+          <div key={place.id}>
+            <h2>{place.name}</h2>
+            <p>緯度: {place.lat}</p>
+            <p>経度: {place.lng}</p>
+            <p>滞在時間: {place.stayminutes}分</p>
+            <p>費用: {place.cost}円</p>
+          </div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          width: "65%",
+          height: "100%",
+        }}
+      >
         <APIProvider apiKey={apiKey}>
           <Map
             defaultCenter={{
