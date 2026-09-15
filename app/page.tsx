@@ -44,6 +44,37 @@ export default function Home() {
     setPlaces([...places, newPlace]);
   };
 
+  const updatePlaceName = (id: number, newName: string) => {
+    setPlaces(
+      places.map((place) =>
+        place.id === id
+          ? {...place, name: newName}
+          : place
+      )
+    )
+  };
+
+  const updateStayMinutes = (id: number, newStayMinutes: number) => {
+    setPlaces(
+      places.map((place) =>
+        place.id === id
+          ? {...place, stayminutes: newStayMinutes}
+          : place
+      )
+    );
+  };
+
+  const updateCost = (id: number, newCost: number) => {
+  setPlaces(
+    places.map((place) =>
+      place.id === id
+        ? { ...place, cost: newCost }
+        : place
+    )
+  );
+};
+  
+
   return (
     <main
       style={{
@@ -63,11 +94,29 @@ export default function Home() {
 
         {places.map((place, index) =>(
           <div key={place.id}>
-            <h2>{place.name}</h2>
+            <input
+              type="text"
+              value={place.name}
+              onChange={(event) =>
+                updatePlaceName(place.id, event.target.value)
+              }
+            />
             <p>緯度: {place.lat}</p>
             <p>経度: {place.lng}</p>
-            <p>滞在時間: {place.stayminutes}分</p>
-            <p>費用: {place.cost}円</p>
+            <input
+              type="number"
+              value={place.stayminutes}
+              onChange={(event) =>
+                updateStayMinutes(place.id, Number(event.target.value))
+              }
+            />
+            <input
+              type="number"
+              value={place.cost}
+              onChange={(event) =>
+                updateCost(place.id, Number(event.target.value))
+              }
+            />
           </div>
         ))}
       </div>
