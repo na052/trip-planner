@@ -73,6 +73,12 @@ export default function Home() {
     )
   );
 };
+
+const deletePlace = (id: number) => {
+  setPlaces(
+    places.filter((place) => place.id !== id)
+  );
+};
   
 
   return (
@@ -117,6 +123,12 @@ export default function Home() {
                 updateCost(place.id, Number(event.target.value))
               }
             />
+
+            <button 
+              onClick={() => deletePlace(place.id)}
+            > 
+            削除
+            </button>
           </div>
         ))}
       </div>
