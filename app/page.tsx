@@ -79,6 +79,34 @@ const deletePlace = (id: number) => {
     places.filter((place) => place.id !== id)
   );
 };
+
+const movePlaceUp = (index: number) => {
+  if(index === 0) {
+    return;
+  }
+
+  const newPlaces = [...places];
+
+  const temp = newPlaces[index];
+  newPlaces[index] = newPlaces[index - 1];
+  newPlaces[index - 1] = temp;
+
+  setPlaces(newPlaces);
+};
+
+const movePlaceDown = (index: number) => {
+  if(index === places.length -1){
+
+  }
+
+  const newPlaces = [...places];
+  
+  const temp = newPlaces[index];
+  newPlaces[index] = newPlaces[index + 1];
+  newPlaces[index + 1] = temp;
+
+  setPlaces(newPlaces);
+};
   
 
   return (
@@ -129,6 +157,17 @@ const deletePlace = (id: number) => {
             > 
             削除
             </button>
+
+            <button
+              onClick={() => movePlaceUp(index)}
+            >  
+            上に移動
+            </button>
+            <button
+              onClick={() => movePlaceDown(index)}
+            >  
+            下に移動
+            </button>  
           </div>
         ))}
       </div>
