@@ -18,6 +18,15 @@ type Place = {
   cost: number;
 };
 
+type Transport = {
+  id: number;
+  fromPlaceId: number;
+  toPlaceId: number;
+  mode: string;
+  durationMinutes: number;
+  cost: number;
+}
+
 function PlaceSearch({
   onPlaceSelect,
 }: {
