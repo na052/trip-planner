@@ -6,7 +6,8 @@ import { APIProvider,
   Map,
   AdvancedMarker,
   MapMouseEvent,
-  useMapsLibrary, } from "@vis.gl/react-google-maps";
+  useMapsLibrary,
+  useMap, } from "@vis.gl/react-google-maps";
 
 type Place = {
   id : number;
@@ -61,6 +62,25 @@ function PlaceSearch({
   }, [placesLibrary, onPlaceSelect]);
 
   return <div ref={containerRef}></div>;
+}
+
+function MapController({
+  selectedPosition,
+
+}: {
+  selectedPosition: google.maps.LatLngLiteral | null;
+}) { 
+  const map = useMap();
+  
+  useEffect(() => {
+    if (!map || !selectedPosition) {
+      return;
+    }
+
+    map.panTo(selectedPosition);
+  }, [map, selectedPosition]);
+
+  return null;
 }
 
 export default function Home() {
@@ -258,7 +278,7 @@ const addGooglePlace = (
         }}
       >
           <Map
-            center={
+            defaultCenter={
               selectedPosition ?? {
                 lat: 35.681236,
                 lng: 139.767125,
@@ -268,6 +288,7 @@ const addGooglePlace = (
             onClick={handleMapClick}
             mapId= "DEMO_MAP_ID"
           >
+            <MapController selectedPosition={selectedPosition} />
             {places.map((place, index) => (
               <AdvancedMarker
                 key={place.id}
