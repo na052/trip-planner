@@ -1,11 +1,12 @@
 "use client";
 
 
-import {useState} from "react";
+import {useState, useEffect, useRef} from "react";
 import { APIProvider,
   Map,
   AdvancedMarker,
-  MapMouseEvent } from "@vis.gl/react-google-maps";
+  MapMouseEvent,
+  useMapsLibrary, } from "@vis.gl/react-google-maps";
 
 type Place = {
   id : number;
@@ -15,6 +16,52 @@ type Place = {
   stayminutes: number;
   cost: number;
 };
+
+function PlaceSearch({
+  onPlaceSelect,
+}: {
+  onPlaceSelect: (place: google.maps.places.Place) => void;
+}) {
+  const placesLibrary = useMapsLibrary("places");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!placesLibrary || !containerRef.current) {
+      return;
+    }
+
+    const autocomplete =
+      new placesLibrary.PlaceAutocompleteElement();
+
+    containerRef.current.appendChild(autocomplete);
+
+    const handleSelect = async (event: any) => {
+      const place = event.placePrediction.toPlace();
+
+      await place.fetchFields({
+        fields: ["displayName", "location"],
+      });
+
+      onPlaceSelect(place);
+    };
+
+    autocomplete.addEventListener(
+      "gmp-select",
+      handleSelect
+    );
+
+    return () => {
+      autocomplete.removeEventListener(
+        "gmp-select",
+        handleSelect
+      );
+
+      autocomplete.remove();
+    };
+  }, [placesLibrary, onPlaceSelect]);
+
+  return <div ref={containerRef}></div>;
+}
 
 export default function Home() {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -96,7 +143,7 @@ const movePlaceUp = (index: number) => {
 
 const movePlaceDown = (index: number) => {
   if(index === places.length -1){
-
+    return;
   }
 
   const newPlaces = [...places];
@@ -107,9 +154,28 @@ const movePlaceDown = (index: number) => {
 
   setPlaces(newPlaces);
 };
-  
+
+const addGooglePlace = (
+  googlePlace: google.maps.places.Place
+) => {
+  if (!googlePlace.location){
+    return;
+  }
+
+  const newPlace: Place = {
+    id: Date.now(),
+    name: googlePlace.displayName ?? "未設定",
+    lat: googlePlace.location.lat(),
+    lng: googlePlace.location.lng(),
+    stayminutes: 60,
+    cost: 0,
+  };
+
+  setPlaces([...places, newPlace]);
+};
 
   return (
+    <APIProvider apiKey={apiKey}>
     <main
       style={{
         display: "flex",
@@ -125,6 +191,9 @@ const movePlaceDown = (index: number) => {
         }}
       >
         <h1>Trip Planner</h1>
+          <PlaceSearch 
+          onPlaceSelect={addGooglePlace}
+        />
 
         {places.map((place, index) =>(
           <div key={place.id}>
@@ -178,7 +247,6 @@ const movePlaceDown = (index: number) => {
           height: "100%",
         }}
       >
-        <APIProvider apiKey={apiKey}>
           <Map
             defaultCenter={{
               lat: 35.681236,
@@ -196,8 +264,9 @@ const movePlaceDown = (index: number) => {
             ))}
 
           </Map>
-        </APIProvider>
+        
       </div>
     </main>
+    </APIProvider>
   );
 }
