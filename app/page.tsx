@@ -213,6 +213,35 @@ const addGooglePlace = (
   })
 };
 
+const calculateRoute = async () => {
+  if(places.length < 2){
+    return;
+  }
+
+  const origin = places[0];
+  const destination = places[1];
+
+  const {Route} = 
+    await google.maps.importLibrary("routes");
+
+    const request: google.maps.routes.ComputeRoutesRequest = {
+      origin: {
+        lat: origin.lat,
+        lng: origin.lng,
+      },
+      destination: {
+        lat: destination.lat,
+        lng: destination.lng,
+      },
+      travelMode: "DRIVING",
+      fields: ["durationMillis", "distanceMeters"],
+    };
+
+    const {routes} = await Route.computeRoutes(request);
+
+    console.log(routes);
+};
+
   return (
     <APIProvider apiKey={apiKey}>
     <main
@@ -275,7 +304,18 @@ const addGooglePlace = (
               onClick={() => movePlaceDown(index)}
             >  
             下に移動
-            </button>  
+            </button>
+            <button onClick={calculateRoute}>
+            ルートを計算
+            </button>
+
+            {index < places.length -1 && (
+              <div>
+                <p>
+                  ↓{place.name}から{places[index + 1].name}へ移動
+                </p>
+              </div>
+            )}
           </div>
         ))}
       </div>
