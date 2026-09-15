@@ -68,6 +68,9 @@ export default function Home() {
 
   const [places, setPlaces] = useState<Place[]>([]);
 
+  const [selectedPosition, setSelectedPosition] =
+    useState<google.maps.LatLngLiteral | null>(null);
+
   
  
   if (!apiKey) {
@@ -161,17 +164,24 @@ const addGooglePlace = (
   if (!googlePlace.location){
     return;
   }
+  const lat = googlePlace.location.lat();
+  const lng = googlePlace.location.lng();
 
   const newPlace: Place = {
     id: Date.now(),
     name: googlePlace.displayName ?? "未設定",
-    lat: googlePlace.location.lat(),
-    lng: googlePlace.location.lng(),
+    lat: lat,
+    lng: lng,
     stayminutes: 60,
     cost: 0,
   };
 
   setPlaces([...places, newPlace]);
+
+  setSelectedPosition({
+    lat: lat,
+    lng: lng,
+  })
 };
 
   return (
@@ -248,11 +258,13 @@ const addGooglePlace = (
         }}
       >
           <Map
-            defaultCenter={{
-              lat: 35.681236,
-              lng: 139.767125,
-            }}
-            defaultZoom={8}
+            center={
+              selectedPosition ?? {
+                lat: 35.681236,
+                lng: 139.767125,
+              }
+            }
+            defaultZoom={14}
             onClick={handleMapClick}
             mapId= "DEMO_MAP_ID"
           >
